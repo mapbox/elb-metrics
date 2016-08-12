@@ -1,0 +1,27 @@
+{
+  "name": "elb-metrics",
+  "version": "1.0.0",
+  "description": "node module to gather ELB metrics",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapbox/elb-metrics.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mapbox/elb-metrics/issues"
+  },
+  "homepage": "https://github.com/mapbox/elb-metrics#readme",
+  "dependencies": {
+    "aws-sdk": "^2.5.0",
+    "aws-sdk-mock": "^1.4.1",
+    "tape": "^4.6.0"
+  }
+}
