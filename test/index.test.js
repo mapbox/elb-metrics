@@ -52,7 +52,7 @@ tape('ELB metrics', function (assert) {
     });
 });
 
-tape('[metrics] restore', function (assert) {
+tape('[CloudWatch] restore', function (assert) {
     AWS.restore('CloudWatch');
     assert.end();
 });
