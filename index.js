@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict';
 
 module.exports = {};
@@ -6,15 +5,15 @@ module.exports.getMetrics = getMetrics;
 
 var AWS = module.exports.AWS = require('aws-sdk');
 
-function getMetrics(startTime, endTime, period, region, elbname, callback) {
+function getMetrics(period, region, elbname, callback) {
     AWS.config.update({region: region});
     var params = {
 
-        EndTime: endTime,
+        EndTime: new Date().toISOString(),
         MetricName: 'Latency',
         Namespace: 'AWS/ELB',
         Period: period || 60,
-        StartTime: endTime,
+        StartTime: new Date(new Date() - 24 * 60 * 60).toISOString(),
         Statistics: ['Sum', 'Average'],
         Dimensions: [
             {
@@ -24,10 +23,10 @@ function getMetrics(startTime, endTime, period, region, elbname, callback) {
         ],
         Unit: 'Seconds'
     };
-
+    console.log(params);
     var cloudwatch = new AWS.CloudWatch();
     cloudwatch.getMetricStatistics(params, function (err, data) {
-        if (err) throw Error;
+        if (err) return callback(err);
         else return callback(null, data);
     });
 }
