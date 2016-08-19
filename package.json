@@ -18,10 +18,14 @@
   "bugs": {
     "url": "https://github.com/mapbox/elb-metrics/issues"
   },
+  "bin": {
+    "elb-metrics": "./bin/getMetrics.js"
+  },
   "homepage": "https://github.com/mapbox/elb-metrics#readme",
   "dependencies": {
     "aws-sdk": "^2.5.0",
     "aws-sdk-mock": "^1.4.1",
+    "minimist": "^1.2.0",
     "tape": "^4.6.0"
   }
 }

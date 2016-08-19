@@ -1,19 +1,18 @@
-var metrics = require('../lib/index');
+'use strict';
+var metrics = require('../index');
 var tape = require('tape');
 var AWS = require('aws-sdk-mock');
 var getMetrics = metrics.getMetrics;
-var today = new  Date();
-var yesterday = new Date(new Date() - 24 * 60 * 60);
 var datapoints = require('./fixture/cloudwatch_datapoints.json');
 
 tape('mocking [ELB]', function (assert) {
     AWS.mock('CloudWatch', 'getMetricStatistics', function (params, callback) {
         var expected = {
-            EndTime: today.toISOString(),
+            EndTime: '2016-08-19T13:05:56.556Z',
             MetricName: 'Latency',
             Namespace: 'AWS/ELB',
             Period: 60,
-            StartTime: yesterday.toISOString(),
+            StartTime: '2016-08-19T13:05:56.556Z',
             Statistics: ['Sum', 'Average'],
             Dimensions: [
                 {
@@ -28,24 +27,8 @@ tape('mocking [ELB]', function (assert) {
     });
     assert.end();
 });
-
 tape('ELB metrics', function (assert) {
-    var params = {
-        EndTime: today.toISOString(),
-        MetricName: 'Latency',
-        Namespace: 'AWS/ELB',
-        Period: 60,
-        StartTime: yesterday.toISOString(),
-        Statistics: ['Sum', 'Average'],
-        Dimensions: [
-            {
-                Name: 'LoadBalancerName',
-                Value: 'abc'
-            }
-        ],
-        Unit: 'Seconds'
-    };
-    getMetrics(params, function (err, data) {
+    getMetrics('2016-08-19T13:05:56.556Z', '2016-08-19T13:05:56.556Z', 60, 'us-east-1', 'abc', function (err, data) {
         assert.ifError(err);
         assert.deepEquals(data, datapoints, 'ok results for getMetricStatistics equal');
         assert.end();
