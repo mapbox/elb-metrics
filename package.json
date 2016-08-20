@@ -25,6 +25,7 @@
   "dependencies": {
     "aws-sdk": "^2.5.0",
     "aws-sdk-mock": "^1.4.1",
+    "d3-queue": "^3.0.2",
     "minimist": "^1.2.0",
     "tape": "^4.6.0"
   }
