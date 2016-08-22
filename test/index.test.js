@@ -4,8 +4,16 @@ var tape = require('tape');
 var AWS = require('aws-sdk-mock');
 var prepareQueries = metrics.prepareQueries;
 var outputMetrics = metrics.outputMetrics;
+var elbMetrics = metrics.elbMetrics;
 var metricdatapoint = require('./fixture/datapoints.json');
 var parameters = require('./fixture/prepareQueries_fixtures.json');
+
+tape('validate if it is an AWS region', function (assert) {
+    elbMetrics(1471610000000, 1471614276790, 'not-an-aws-region', 'abc', function (err, data) {
+        assert.equal(err.message, 'provided region name not an AWS region', 'ok validated region name');
+        assert.end();
+    });
+});
 
 tape('prepare queries', function (assert) {
     var obj = {
