@@ -10,6 +10,7 @@ var metrics = require('../index');
 
 if (!startTime || !endTime || !region || !elbname) {
     help();
+    throw new Error('incorrect input!');
 }
 
 var params = metrics.prepareQueries(startTime, endTime, region, elbname);
