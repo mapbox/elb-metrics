@@ -9,13 +9,20 @@ var metricdatapoint = require('./fixture/datapoints.json');
 var parameters = require('./fixture/prepareQueries_fixtures.json');
 
 tape('validate if it is an AWS region', function (assert) {
-    elbMetrics(1471610000000, 1471614276790, 'not-an-aws-region', 'abc', function (err, data) {
+    elbMetrics(1471610000000, 1471614276790, 'xyz', 'abc', function (err, data) {
         assert.equal(err.message, 'provided region name not an AWS region', 'ok validated region name');
         assert.end();
     });
 });
 
-tape('prepare queries', function (assert) {
+tape('validate if it is an AWS region', function (assert) {
+    elbMetrics(1471610000000, 1471614276790, 'us-east-1', 1234, function (err, data) {
+        assert.equal(err.message, 'provided ELB name should be a string', 'ok ELB type');
+        assert.end();
+    });
+});
+
+tape('prepare queries -- region', function (assert) {
     var obj = {
         startTime: 1471610000000,
         endTime: 1471614276790,
