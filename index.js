@@ -4,40 +4,56 @@ module.exports = {};
 module.exports.getMetrics = getMetrics;
 module.exports.prepareQueries = prepareQueries;
 module.exports.outputMetrics = outputMetrics;
+module.exports.elbMetrics = elbMetrics;
 var queue = require('d3-queue').queue;
 var AWS = module.exports.AWS = require('aws-sdk');
 
 /**
  * Creates parameters for each cloudwatch query given the input from the user.
- *
- * @param {Date} timestamp from when you want the datapoints to be generated
- * @param {Date} timestamp till when you want the datapoints to be generated
- * @param {String} region where the ELB is present
- * @param {String} name of the ELB
+ * @param {Object} following input from the user - startTime, endTime, region, elbname
+ * @param {callback}
+ */
+
+function elbMetrics(startTime, endTime, region, elbname, callback) {
+
+    var parameters = {
+        startTime: startTime,
+        endTime: endTime,
+        region: region,
+        elbname: elbname
+    };
+    var queries = prepareQueries(parameters);
+    outputMetrics(queries, region, function (err, data) {
+        if (err) return callback(err);
+        else return callback(null, data);
+    });
+}
+/**
+ * Creates parameters for each cloudwatch query given the input from the user.
+ * @param {Object} commmand line input formatted into an object
  * @returns {Array} array of desired metric parameters
  */
 
-function prepareQueries(startTime, endTime, region, elbname) {
+function prepareQueries(obj) {
     var desiredMetrics = {'HTTPCode_Backend_2XX': 'Sum', 'HTTPCode_Backend_3XX': 'Sum', 'HTTPCode_Backend_4XX': 'Sum', 'HTTPCode_Backend_5XX': 'Sum', 'RequestCount': 'Sum', 'Latency': 'Average'};
     var desiredMetricsParameters = [];
-
     for (var i in desiredMetrics) {
 
         var params = {
-            EndTime: new Date(endTime).toISOString(),
+            EndTime: new Date(obj.endTime).toISOString(),
             MetricName: i,
             Namespace: 'AWS/ELB',
             Period: 60,
-            StartTime: new Date(startTime).toISOString(),
+            StartTime: new Date(obj.startTime).toISOString(),
             Statistics: [desiredMetrics[i].toString()],
             Dimensions: [
                 {
                     Name: 'LoadBalancerName',
-                    Value: elbname
+                    Value: obj.elbname
                 }
             ]
         };
-        desiredMetricsParameters.push({parameter: params, region: region});
+        desiredMetricsParameters.push({parameter: params, region: obj.region});
     }
     return desiredMetricsParameters;
 }
@@ -72,7 +88,7 @@ function outputMetrics(desiredMetricsDimensions, region, callback) {
  * Makes requests to the cloudwatch api and gets Sum/Average for
  * HTTPCode_Backend_2XX, HTTPCode_Backend_3XX, HTTPCode_Backend_4XX, HTTPCode_Backend_5XX, RequestCount, Latency
  *
- * @param {Object} parameter Objecy for getMetricStatistics
+ * @param {Object} parameter Object for getMetricStatistics
  * @param {String} region where the ELB is present
  * @param {callback}
  * @returns {Object} Datapoints and Labels for the given MetricName in the form of an Object

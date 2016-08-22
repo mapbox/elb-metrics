@@ -13,9 +13,6 @@ if (!startTime || !endTime || !region || !elbname) {
     throw new Error('incorrect input!');
 }
 
-var params = metrics.prepareQueries(startTime, endTime, region, elbname);
-metrics.outputMetrics(params, region, function (err, data) {
+metrics.elbMetrics(startTime, endTime, region, elbname, function (err, data) {
     if (err) console.log(err);
-    else console.log(JSON.stringify(data, null, 4));
 });
-

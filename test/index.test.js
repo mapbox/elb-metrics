@@ -8,7 +8,13 @@ var metricdatapoint = require('./fixture/datapoints.json');
 var parameters = require('./fixture/prepareQueries_fixtures.json');
 
 tape('prepare queries', function (assert) {
-    var datapoints = prepareQueries(1471610000000, 1471614276790, 'us-east-1', 'abc');
+    var obj = {
+        startTime: 1471610000000,
+        endTime: 1471614276790,
+        region: 'us-east-1',
+        elbname: 'abc'
+    };
+    var datapoints = prepareQueries(obj);
     assert.deepEquals(datapoints, parameters, 'ok desired metrics parameters equal');
     assert.end();
 });
@@ -24,7 +30,13 @@ tape('mocking [ELB]', function (assert) {
     assert.end();
 });
 tape('ELB metrics', function (assert) {
-    var datapoints = prepareQueries(1471692377978, 1471698014705, 'us-east-1', 'api-geocoder-production');
+    var obj = {
+        startTime: 1471692377978,
+        endTime: 1471698014705,
+        region: 'us-east-1',
+        elbname: 'api-geocoder-production'
+    };
+    var datapoints = prepareQueries(obj);
 
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
         if (err) console.log(err);
