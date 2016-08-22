@@ -15,4 +15,5 @@ if (!startTime || !endTime || !region || !elbname) {
 
 metrics.elbMetrics(startTime, endTime, region, elbname, function (err, data) {
     if (err) console.log(err);
+    else console.log(JSON.stringify(data, null, 4));
 });
