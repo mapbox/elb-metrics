@@ -15,12 +15,17 @@ tape('prepare queries', function (assert) {
 
 tape('mocking [ELB]', function (assert) {
     AWS.mock('CloudWatch', 'getMetricStatistics', function (params, callback) {
-        callback(null, metricdatapoint);
+
+        metricdatapoint.forEach(function (i) {
+            if (params.MetricName === i.Label)
+                callback(null, i);
+        });
     });
     assert.end();
 });
 tape('ELB metrics', function (assert) {
-    var datapoints = prepareQueries(1471692377978, 1471698014705, 'us-eas', 'api-geocoder-production');
+    var datapoints = prepareQueries(1471692377978, 1471698014705, 'us-east-1', 'api-geocoder-production');
+
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
         if (err) console.log(err);
         assert.ifError(err);

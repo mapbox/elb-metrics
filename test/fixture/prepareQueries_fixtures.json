@@ -7,7 +7,7 @@
             "Period": 60,
             "StartTime": "2016-08-19T12:33:20.000Z",
             "Statistics": [
-                "SampleCount"
+                "Sum"
             ],
             "Dimensions": [
                 {
@@ -26,7 +26,7 @@
             "Period": 60,
             "StartTime": "2016-08-19T12:33:20.000Z",
             "Statistics": [
-                "SampleCount"
+                "Sum"
             ],
             "Dimensions": [
                 {
@@ -45,7 +45,7 @@
             "Period": 60,
             "StartTime": "2016-08-19T12:33:20.000Z",
             "Statistics": [
-                "SampleCount"
+                "Sum"
             ],
             "Dimensions": [
                 {
@@ -64,7 +64,7 @@
             "Period": 60,
             "StartTime": "2016-08-19T12:33:20.000Z",
             "Statistics": [
-                "SampleCount"
+                "Sum"
             ],
             "Dimensions": [
                 {
@@ -83,7 +83,7 @@
             "Period": 60,
             "StartTime": "2016-08-19T12:33:20.000Z",
             "Statistics": [
-                "SampleCount"
+                "Sum"
             ],
             "Dimensions": [
                 {

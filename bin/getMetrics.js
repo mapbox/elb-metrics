@@ -12,6 +12,9 @@ if (!startTime || !endTime || !region || !elbname) {
     help();
 }
 
-var allMetrics = metrics.prepareQueries(startTime, endTime, region, elbname);
-console.log(allMetrics);
+var params = metrics.prepareQueries(startTime, endTime, region, elbname);
+metrics.outputMetrics(params, region, function (err, data) {
+    if (err) console.log(err);
+    else console.log(JSON.stringify(data, null, 4));
+});
 

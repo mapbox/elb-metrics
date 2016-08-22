@@ -8,7 +8,7 @@ var queue = require('d3-queue').queue;
 var AWS = module.exports.AWS = require('aws-sdk');
 
 function prepareQueries(startTime, endTime, region, elbname) {
-    var desiredMetrics = {'HTTPCode_Backend_2XX': 'SampleCount', 'HTTPCode_Backend_3XX': 'SampleCount', 'HTTPCode_Backend_4XX': 'SampleCount', 'HTTPCode_Backend_5XX': 'SampleCount', 'RequestCount': 'SampleCount','Latency': 'Average',};
+    var desiredMetrics = {'HTTPCode_Backend_2XX': 'Sum', 'HTTPCode_Backend_3XX': 'Sum', 'HTTPCode_Backend_4XX': 'Sum', 'HTTPCode_Backend_5XX': 'Sum', 'RequestCount': 'Sum', 'Latency': 'Average'};
     var desiredMetricsParameters = [];
 
     for (var i in desiredMetrics) {
@@ -34,24 +34,29 @@ function prepareQueries(startTime, endTime, region, elbname) {
 
 function outputMetrics(desiredMetricsDimensions, region, callback) {
     var q = queue(6);
-
+    var allMetrics = [];
     desiredMetricsDimensions.forEach(function (i) {
         q.defer(getMetrics, i.parameter, i.region);
     });
-    q.awaitAll(callback);
+    q.awaitAll(function (err, data) {
+        if (err) return callback(err);
+        else {
+            data.forEach(function (i) {
+                allMetrics.push({Label: i.Label, Datapoints: i.Datapoints});
+            });
+            callback(null, allMetrics);
+        }
+    });
 }
 
 function getMetrics(params, region, callback) {
-    var allDatapoints = [];
     AWS.config.update({region: region});
     var cloudwatch = new AWS.CloudWatch();
 
     cloudwatch.getMetricStatistics(params, function (err, data) {
         if (err) return callback(err);
         else {
-            allDatapoints.push(data);
-            return callback(null, allDatapoints);
+            return callback(null, data);
         }
     });
 }
-
