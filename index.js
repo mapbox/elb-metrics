@@ -15,6 +15,7 @@ var AWS = module.exports.AWS = require('aws-sdk');
  */
 
 function elbMetrics(startTime, endTime, region, elbname, callback) {
+    var diffInMinutes;
     var awsRegions = ['us-east-1', 'us-west-2', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1'];
 
     if (!(awsRegions.indexOf(region) >= 0)) {
@@ -27,6 +28,11 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
 
     if ((startTime - endTime) > 0) {
         return callback(new Error('EndTime should be greater than startTime'));
+    }
+
+    diffInMinutes = Math.round((endTime - startTime) / 60000);
+    if (diffInMinutes > 60) {
+        return callback(new Error('start and end time should not be more than 60 minutes apart'));
     }
 
     var parameters = {

@@ -15,7 +15,7 @@ tape('validate if it is an AWS region', function (assert) {
     });
 });
 
-tape('validate if it is an AWS region', function (assert) {
+tape('validate if ELB name is a string', function (assert) {
     elbMetrics(1471610000000, 1471614276790, 'us-east-1', 1234, function (err, data) {
         assert.equal(err.message, 'provided ELB name should be a string', 'ok ELB type');
         assert.end();
@@ -29,7 +29,15 @@ tape('validate if start time is greater than end time', function (assert) {
     });
 });
 
-tape('prepare queries -- region', function (assert) {
+
+tape('validate if start and end time are no more than 60 minutes apart', function (assert) {
+    elbMetrics(1471692377978, 1471698014705, 'us-east-1', 'abc', function (err, data) {
+        assert.equal(err.message, 'start and end time should not be more than 60 minutes apart', 'ok end/start time error');
+        assert.end();
+    });
+});
+
+tape('prepare queries', function (assert) {
     var obj = {
         startTime: 1471610000000,
         endTime: 1471614276790,
