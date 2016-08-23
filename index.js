@@ -20,9 +20,13 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
     if (!(awsRegions.indexOf(region) >= 0)) {
         return callback(new Error('provided region name not an AWS region'));
     }
-  
+
     if (typeof elbname != 'string') {
         return callback(new Error('provided ELB name should be a string'));
+    }
+
+    if ((startTime - endTime) > 0) {
+        return callback(new Error('EndTime should be greater than startTime'));
     }
 
     var parameters = {

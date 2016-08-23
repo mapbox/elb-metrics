@@ -22,6 +22,13 @@ tape('validate if it is an AWS region', function (assert) {
     });
 });
 
+tape('validate if start time is greater than end time', function (assert) {
+    elbMetrics(1471614276790, 1471610000000, 'us-east-1', 'abc', function (err, data) {
+        assert.equal(err.message, 'EndTime should be greater than startTime', 'ok end/start time error');
+        assert.end();
+    });
+});
+
 tape('prepare queries -- region', function (assert) {
     var obj = {
         startTime: 1471610000000,
