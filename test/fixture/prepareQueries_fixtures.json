@@ -1,0 +1,116 @@
+[
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "HTTPCode_Backend_2XX",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Sum"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    },
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "HTTPCode_Backend_3XX",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Sum"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    },
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "HTTPCode_Backend_4XX",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Sum"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    },
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "HTTPCode_Backend_5XX",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Sum"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    },
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "RequestCount",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Sum"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    },
+    {
+        "parameter": {
+            "EndTime": "2016-08-19T13:44:36.790Z",
+            "MetricName": "Latency",
+            "Namespace": "AWS/ELB",
+            "Period": 60,
+            "StartTime": "2016-08-19T12:33:20.000Z",
+            "Statistics": [
+                "Average"
+            ],
+            "Dimensions": [
+                {
+                    "Name": "LoadBalancerName",
+                    "Value": "abc"
+                }
+            ]
+        },
+        "region": "us-east-1"
+    }
+]
