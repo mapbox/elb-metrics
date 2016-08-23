@@ -53,8 +53,7 @@ tape('mocking [ELB]', function (assert) {
     AWS.mock('CloudWatch', 'getMetricStatistics', function (params, callback) {
 
         metricdatapoint.forEach(function (i) {
-            if (params.MetricName === i.Label)
-                callback(null, i);
+            if (params.MetricName === i.Label) callback(null, i);
         });
     });
     assert.end();
@@ -69,7 +68,6 @@ tape('ELB metrics', function (assert) {
     var datapoints = prepareQueries(obj);
 
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
-        if (err) console.log(err);
         assert.ifError(err);
         assert.deepEquals(data, metricdatapoint, 'ok results for getMetricStatistics equal');
         assert.end();

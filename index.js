@@ -43,10 +43,7 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
     };
 
     var queries = prepareQueries(parameters);
-    outputMetrics(queries, region, function (err, data) {
-        if (err) return callback(err);
-        else return callback(null, data);
-    });
+    outputMetrics(queries, region, callback);
 }
 /**
  * Creates parameters for each cloudwatch query given the input from the user.
@@ -55,7 +52,15 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
  */
 
 function prepareQueries(obj) {
-    var desiredMetrics = {'HTTPCode_Backend_2XX': 'Sum', 'HTTPCode_Backend_3XX': 'Sum', 'HTTPCode_Backend_4XX': 'Sum', 'HTTPCode_Backend_5XX': 'Sum', 'RequestCount': 'Sum', 'Latency': 'Average'};
+    var desiredMetrics = {
+        'HTTPCode_Backend_2XX': 'Sum',
+        'HTTPCode_Backend_3XX': 'Sum',
+        'HTTPCode_Backend_4XX': 'Sum',
+        'HTTPCode_Backend_5XX': 'Sum',
+        'RequestCount': 'Sum',
+        'Latency': 'Average'
+    };
+
     var desiredMetricsParameters = [];
     for (var i in desiredMetrics) {
 
@@ -95,12 +100,10 @@ function outputMetrics(desiredMetricsDimensions, region, callback) {
     });
     q.awaitAll(function (err, data) {
         if (err) return callback(err);
-        else {
-            data.forEach(function (i) {
-                allMetrics.push({Label: i.Label, Datapoints: i.Datapoints});
-            });
-            callback(null, allMetrics);
-        }
+        data.forEach(function (i) {
+            allMetrics.push({Label: i.Label, Datapoints: i.Datapoints});
+        });
+        callback(null, allMetrics);
     });
 }
 
@@ -118,10 +121,5 @@ function getMetrics(params, region, callback) {
     AWS.config.update({region: region});
     var cloudwatch = new AWS.CloudWatch();
 
-    cloudwatch.getMetricStatistics(params, function (err, data) {
-        if (err) return callback(err);
-        else {
-            return callback(null, data);
-        }
-    });
+    cloudwatch.getMetricStatistics(params, callback);
 }

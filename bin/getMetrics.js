@@ -9,8 +9,8 @@ var elbname = argv.elbname;
 var metrics = require('../index');
 
 if (!startTime || !endTime || !region || !elbname) {
+    console.log('incorrect input !');
     help();
-    throw new Error('incorrect input!');
 }
 
 metrics.elbMetrics(startTime, endTime, region, elbname, function (err, data) {
