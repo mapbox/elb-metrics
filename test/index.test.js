@@ -63,7 +63,7 @@ tape('ELB metrics', function (assert) {
         startTime: 1471692377978,
         endTime: 1471698014705,
         region: 'us-east-1',
-        elbname: 'api-geocoder-production'
+        elbname: 'abc'
     };
     var datapoints = prepareQueries(obj);
 
