@@ -4,17 +4,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:02:00.000Z",
-                "Sum": 1300,
+                "Sum": 13,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 1734,
+                "Sum": 14,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T11:40:00.000Z",
-                "Sum": 2050,
+                "Sum": 200,
                 "Unit": "Count"
             }
         ]
@@ -79,17 +79,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:02:00.000Z",
-                "Sum": 1305,
+                "Sum": 1,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 1757,
+                "Sum": 1,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T11:40:00.000Z",
-                "Sum": 2061,
+                "Sum": 2,
                 "Unit": "Count"
             }
         ]
@@ -99,17 +99,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T11:57:00.000Z",
-                "Average": 0.4340448370442631,
+                "Average": 0.4,
                 "Unit": "Seconds"
             },
             {
                 "Timestamp": "2016-08-20T12:09:00.000Z",
-                "Average": 0.4592747318940085,
+                "Average": 0.4,
                 "Unit": "Seconds"
             },
             {
                 "Timestamp": "2016-08-20T12:33:00.000Z",
-                "Average": 0.4554447089033717,
+                "Average": 0.4,
                 "Unit": "Seconds"
             }
         ]
