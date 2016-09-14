@@ -1,12 +1,13 @@
 'use strict';
 var metrics = require('../index');
 var tape = require('tape');
-var AWS = require('aws-sdk-mock');
+var AWS = require('aws-sdk');
 var prepareQueries = metrics.prepareQueries;
 var outputMetrics = metrics.outputMetrics;
 var elbMetrics = metrics.elbMetrics;
 var metricdatapoint = require('./fixture/datapoints.json');
 var parameters = require('./fixture/prepareQueries_fixtures.json');
+var originalCloudWatch = AWS.CloudWatch;
 
 tape('validate if it is an AWS region', function (assert) {
     elbMetrics(1471610000000, 1471614276790, 'xyz', 'abc', function (err, data) {
@@ -49,15 +50,19 @@ tape('prepare queries', function (assert) {
     assert.end();
 });
 
-tape('mocking [ELB]', function (assert) {
-    AWS.mock('CloudWatch', 'getMetricStatistics', function (params, callback) {
+tape('mocking [CloudWatch]', function (assert) {
 
+    AWS.CloudWatch = MockCloudWatch;
+    function MockCloudWatch() {}
+
+    MockCloudWatch.prototype.getMetricStatistics = function (params, callback) {
         metricdatapoint.forEach(function (i) {
             if (params.MetricName === i.Label) callback(null, i);
         });
-    });
+    };
     assert.end();
 });
+
 tape('ELB metrics', function (assert) {
     var obj = {
         startTime: 1471692377978,
@@ -75,6 +80,6 @@ tape('ELB metrics', function (assert) {
 });
 
 tape('[CloudWatch] restore', function (assert) {
-    AWS.restore('CloudWatch');
+    AWS.CloudWatch = originalCloudWatch;
     assert.end();
 });
