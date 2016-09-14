@@ -5,6 +5,7 @@ var AWS = require('aws-sdk');
 var prepareQueries = metrics.prepareQueries;
 var outputMetrics = metrics.outputMetrics;
 var elbMetrics = metrics.elbMetrics;
+var prepareResults = metrics.prepareResults;
 var metricdatapoint = require('./fixture/datapoints.json');
 var parameters = require('./fixture/prepareQueries_fixtures.json');
 var originalCloudWatch = AWS.CloudWatch;
@@ -65,19 +66,29 @@ tape('mocking [CloudWatch]', function (assert) {
 
 tape('ELB metrics', function (assert) {
     var obj = {
-        startTime: 1471692377978,
-        endTime: 1471698014705,
+        startTime: 1473838245009,
+        endTime: 1473838232083,
         region: 'us-east-1',
         elbname: 'abc'
     };
     var datapoints = prepareQueries(obj);
+    var expectedPecentages = {period: '12s',
+    requestPerSecond: '4/s',
+    percent2xx: '50 %',
+    percent3xx: '25 %',
+    percent4xx: '22.92 %',
+    percent5xx: '2.08 %',
+    avgLatency: 0.4};
 
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
         assert.ifError(err);
         assert.deepEquals(data, metricdatapoint, 'ok results for getMetricStatistics equal');
+        var requestPercentages = prepareResults(obj.startTime, obj.endTime, data);
+        assert.deepEquals(requestPercentages, expectedPecentages, 'okay metric percentages equal');
         assert.end();
     });
 });
+
 
 tape('[CloudWatch] restore', function (assert) {
     AWS.CloudWatch = originalCloudWatch;
