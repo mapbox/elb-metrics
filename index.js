@@ -47,7 +47,7 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
     outputMetrics(queries, region, function (err, data) {
         if (err) return callback(err);
         var requestPercentages = prepareResults(startTime, endTime, data);
-        return callback(null, requestPercentages);
+        callback(null, requestPercentages);
     });
 }
 /**

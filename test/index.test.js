@@ -78,7 +78,7 @@ tape('ELB metrics', function (assert) {
     percent3xx: '25 %',
     percent4xx: '22.92 %',
     percent5xx: '2.08 %',
-    avgLatency: 0.4};
+    avgLatency: 0.3};
 
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
         assert.ifError(err);
