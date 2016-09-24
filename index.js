@@ -5,6 +5,7 @@ module.exports.getMetrics = getMetrics;
 module.exports.prepareQueries = prepareQueries;
 module.exports.outputMetrics = outputMetrics;
 module.exports.elbMetrics = elbMetrics;
+module.exports.prepareResults = prepareResults;
 var queue = require('d3-queue').queue;
 var AWS = module.exports.AWS = require('aws-sdk');
 
@@ -43,7 +44,11 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
     };
 
     var queries = prepareQueries(parameters);
-    outputMetrics(queries, region, callback);
+    outputMetrics(queries, region, function (err, data) {
+        if (err) return callback(err);
+        var requestPercentages = prepareResults(startTime, endTime, data);
+        callback(null, requestPercentages);
+    });
 }
 /**
  * Creates parameters for each cloudwatch query given the input from the user.
@@ -122,4 +127,46 @@ function getMetrics(params, region, callback) {
     var cloudwatch = new AWS.CloudWatch();
 
     cloudwatch.getMetricStatistics(params, callback);
+}
+
+function prepareResults(startTime, endTime, data) {
+    var diff = startTime - endTime;
+    var period = Math.abs(Math.floor(diff / 1000));
+    var total = [];
+    var sumLatency = 0;
+
+    for (var i = 0; i < data.length - 1; i++) {
+        total[i] = totalRequests(data[i]);
+    }
+    /* calculate percentage of 2xx, 3xx, 4xx, 5xx */
+
+    var requestPerSecond = Math.round((total[4] / period) * 100) / 100;
+    var percent2xx = Math.round(((total[0] / total[4]) * 100) * 100) / 100;
+    var percent3xx = Math.round(((total[1] / total[4]) * 100) * 100) / 100;
+    var percent4xx = Math.round(((total[2] / total[4]) * 100) * 100) / 100;
+    var percent5xx = Math.round(((total[3] / total[4]) * 100) * 100) / 100;
+
+    /* average latency */
+    data[5].Datapoints.forEach(function (i) {
+        sumLatency += i.Average;
+    });
+    var avgLatency = Math.round((sumLatency / data[5].Datapoints.length) * 100) / 100;
+
+    return {
+        'period': period + 's',
+        'requestPerSecond': requestPerSecond + '/s',
+        'percent2xx': percent2xx + ' %',
+        'percent3xx': percent3xx + ' %',
+        'percent4xx': percent4xx + ' %',
+        'percent5xx': percent5xx + ' %',
+        'avgLatency': avgLatency
+    };
+}
+
+function totalRequests(metric) {
+    var sum = 0;
+    metric.Datapoints.forEach(function (i) {
+        sum += i.Sum;
+    });
+    return sum;
 }

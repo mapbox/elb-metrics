@@ -4,17 +4,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:02:00.000Z",
-                "Sum": 13,
+                "Sum": 1,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 14,
+                "Sum": 3,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T11:40:00.000Z",
-                "Sum": 200,
+                "Sum": 20,
                 "Unit": "Count"
             }
         ]
@@ -24,17 +24,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:02:00.000Z",
-                "Sum": 1,
+                "Sum": 4,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:59:00.000Z",
-                "Sum": 5,
+                "Sum": 4,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 1,
+                "Sum": 4,
                 "Unit": "Count"
             }
         ]
@@ -49,12 +49,12 @@
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 21,
+                "Sum": 1,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T11:40:00.000Z",
-                "Sum": 11,
+                "Sum": 6,
                 "Unit": "Count"
             }
         ]
@@ -64,7 +64,7 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 1,
+                "Sum": 0,
                 "Unit": "Count"
             },
             {
@@ -79,17 +79,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T12:02:00.000Z",
-                "Sum": 1,
+                "Sum": 20,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T12:39:00.000Z",
-                "Sum": 1,
+                "Sum": 20,
                 "Unit": "Count"
             },
             {
                 "Timestamp": "2016-08-20T11:40:00.000Z",
-                "Sum": 2,
+                "Sum": 8,
                 "Unit": "Count"
             }
         ]
@@ -99,17 +99,17 @@
         "Datapoints": [
             {
                 "Timestamp": "2016-08-20T11:57:00.000Z",
-                "Average": 0.4,
+                "Average": 0.1,
                 "Unit": "Seconds"
             },
             {
                 "Timestamp": "2016-08-20T12:09:00.000Z",
-                "Average": 0.4,
+                "Average": 0.3,
                 "Unit": "Seconds"
             },
             {
                 "Timestamp": "2016-08-20T12:33:00.000Z",
-                "Average": 0.4,
+                "Average": 0.5,
                 "Unit": "Seconds"
             }
         ]
