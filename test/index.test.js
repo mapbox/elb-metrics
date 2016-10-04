@@ -6,9 +6,15 @@ var prepareQueries = metrics.prepareQueries;
 var outputMetrics = metrics.outputMetrics;
 var elbMetrics = metrics.elbMetrics;
 var prepareResults = metrics.prepareResults;
+var preFlightCheck = metrics.preFlightCheck;
 var metricdatapoint = require('./fixture/datapoints.json');
-var parameters = require('./fixture/prepareQueries_fixtures.json');
+var elbQueries = require('./fixture/prepareQueries_ELB.json');
+var albQueries = require('./fixture/prepareQueries_ALB.json');
+var describeALB = require('./fixture/describeALB.json');
+var describeELB = require('./fixture/describeELB.json');
 var originalCloudWatch = AWS.CloudWatch;
+var originalELB = AWS.ELB;
+var originalELB2 = AWS.ELBv2;
 
 tape('validate if it is an AWS region', function (assert) {
     elbMetrics(1471610000000, 1471614276790, 'xyz', 'abc', function (err, data) {
@@ -39,6 +45,51 @@ tape('validate if start and end time are no more than 60 minutes apart', functio
     });
 });
 
+tape('mock [ELB]', function (assert) {
+    AWS.ELB = MockELB;
+    function MockELB() {}
+    MockELB.prototype.describeLoadBalancers = function (params, callback) {
+        return callback(null, describeELB);
+    };
+    assert.end();
+});
+
+
+tape('preflight check elb', function (assert) {
+    preFlightCheck('elb', function (err, data) {
+        if (err) console.log(err);
+        assert.deepEquals(data, 'green-eggs-and-ham-VPC', 'ok ELB returns ELB name');
+        assert.end();
+    });
+});
+
+tape('[ELB] restore', function (assert) {
+    AWS.ELB = originalELB;
+    assert.end();
+});
+
+tape('mock [ELB2]', function (assert) {
+    AWS.ELBv2 = MockELBv2;
+    function MockELBv2() {}
+    MockELBv2.prototype.describeLoadBalancers = function (params, callback) {
+        return callback(null, describeALB);
+    };
+    assert.end();
+});
+
+tape('preflight check alb', function (assert) {
+    preFlightCheck('alb', function (err, data) {
+        if (err) console.log(err);
+        assert.deepEquals(data, 'app/green-eggs-and-ham/1234567890123456', 'ok returns ALB name');
+        assert.end();
+    });
+});
+
+tape('[ELB2] restore', function (assert) {
+    AWS.ELBv2 = originalELB2;
+    assert.end();
+});
+
 tape('prepare queries', function (assert) {
     var obj = {
         startTime: 1471610000000,
@@ -46,8 +97,10 @@ tape('prepare queries', function (assert) {
         region: 'us-east-1',
         elbname: 'abc'
     };
-    var datapoints = prepareQueries(obj);
-    assert.deepEquals(datapoints, parameters, 'ok desired metrics parameters equal');
+    var elbMetricQueries = prepareQueries(obj, 1);
+    assert.deepEquals(elbMetricQueries, elbQueries, 'ok ELB desired metrics equal');
+    var albMetricQueries = prepareQueries(obj, 0);
+    assert.deepEquals(albMetricQueries, albQueries, 'ok ALB desired metrics equal');
     assert.end();
 });
 
@@ -71,7 +124,7 @@ tape('ELB metrics', function (assert) {
         region: 'us-east-1',
         elbname: 'abc'
     };
-    var datapoints = prepareQueries(obj);
+    var datapoints = prepareQueries(obj, 1);
     var expectedPecentages = {period: '12s',
     requestPerSecond: '4/s',
     percent2xx: '50 %',
