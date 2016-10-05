@@ -57,11 +57,11 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
 }
 
 function preFlightCheck(elbname, callback) {
-    var q = queue(6);
+    var q = queue(2);
     q.defer(getELBName, elbname);
     q.defer(getALBName, elbname);
     q.awaitAll(function (err, data) {
-        if (err) console.log('err', err);
+        if (err) return callback(err);
         data = data.filter(d => { return d; });
         return callback(null, data[0]);
 
@@ -73,7 +73,7 @@ function getALBName(elbname, callback) {
     var parameter = {Names: [elbname]};
     elbv2.describeLoadBalancers(parameter, function (err, data) {
         if (err) {
-            if (err.code === 'LoadBalancerNotFound') return callback(null, null);
+            if (err.code === 'LoadBalancerNotFound') return callback();
         } else {
             var arn = data.LoadBalancers[0].LoadBalancerArn;
             var albName = arn.match(/app.*/);
@@ -87,7 +87,7 @@ function getELBName(elbname, callback) {
     var parameter = {LoadBalancerNames: [elbname]};
     elb.describeLoadBalancers(parameter, function (err, data) {
         if (err) {
-            if (err.code === 'LoadBalancerNotFound') return callback(null, null);
+            if (err.code === 'LoadBalancerNotFound') return callback();
         }
         return callback(null, data.LoadBalancerDescriptions[0].LoadBalancerName);
     });

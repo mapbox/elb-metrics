@@ -49,22 +49,16 @@ tape('mock [ELB]', function (assert) {
     AWS.ELB = MockELB;
     function MockELB() {}
     MockELB.prototype.describeLoadBalancers = function (params, callback) {
-        return callback(null, describeELB);
+        var err = {message: 'There is no ACTIVE Load Balancer named \'alb\'',
+        code: 'LoadBalancerNotFound',
+        time: 'Tue Oct 04 2016 13:43:19 GMT+0530 (IST)',
+        requestId: '1234-456-7890-1111-111111111111',
+        statusCode: 400,
+        retryable: false,
+        retryDelay: 94.10519227385521};
+        if (params.LoadBalancerNames[0] === 'elb') callback(null, describeELB);
+        if (params.LoadBalancerNames[0] === 'alb') callback(err);
     };
-    assert.end();
-});
-
-
-tape('preflight check elb', function (assert) {
-    preFlightCheck('elb', function (err, data) {
-        if (err) console.log(err);
-        assert.deepEquals(data, 'green-eggs-and-ham-VPC', 'ok ELB returns ELB name');
-        assert.end();
-    });
-});
-
-tape('[ELB] restore', function (assert) {
-    AWS.ELB = originalELB;
     assert.end();
 });
 
@@ -72,22 +66,33 @@ tape('mock [ELB2]', function (assert) {
     AWS.ELBv2 = MockELBv2;
     function MockELBv2() {}
     MockELBv2.prototype.describeLoadBalancers = function (params, callback) {
-        return callback(null, describeALB);
+        var err = {message: 'There is no ACTIVE Load Balancer named \'elb\'',
+        code: 'LoadBalancerNotFound',
+        time: 'Tue Oct 04 2016 13:43:19 GMT+0530 (IST)',
+        requestId: '1234-456-7890-1111-111111111111',
+        statusCode: 400,
+        retryable: false,
+        retryDelay: 94.10519227385521};
+        if (params.Names[0] === 'elb') callback(err);
+        if (params.Names[0] === 'alb') callback(null, describeALB);
     };
     assert.end();
 });
 
-tape('preflight check alb', function (assert) {
-    preFlightCheck('alb', function (err, data) {
-        if (err) console.log(err);
-        assert.deepEquals(data, 'app/green-eggs-and-ham/1234567890123456', 'ok returns ALB name');
+tape('preflight check elb', function (assert) {
+    preFlightCheck('elb', function (err, data) {
+        assert.ifError(err);
+        assert.deepEquals(data, 'green-eggs-and-ham-VPC', 'ok ELB returns ELB name');
         assert.end();
     });
 });
 
-tape('[ELB2] restore', function (assert) {
-    AWS.ELBv2 = originalELB2;
-    assert.end();
+tape('preflight check alb', function (assert) {
+    preFlightCheck('alb', function (err, data) {
+        assert.ifError(err);
+        assert.deepEquals(data, 'app/green-eggs-and-ham/1234567890123456', 'ok returns ALB name');
+        assert.end();
+    });
 });
 
 tape('prepare queries', function (assert) {
@@ -145,5 +150,11 @@ tape('ELB metrics', function (assert) {
 
 tape('[CloudWatch] restore', function (assert) {
     AWS.CloudWatch = originalCloudWatch;
+    assert.end();
+});
+
+tape('[ELB]s restore', function (assert) {
+    AWS.ELB = originalELB;
+    AWS.ELBv2 = originalELB2;
     assert.end();
 });
