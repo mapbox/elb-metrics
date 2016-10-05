@@ -1,0 +1,31 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "12345678-8a0a-11a6-bad0-123456789012"
+  },
+  "LoadBalancers": [{
+    "VpcId": "vpc-12345678",
+    "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:12345:loadbalancer/app/green-eggs-and-ham/1234567890123456",
+    "State": {
+      "Code": "active"
+    },
+    "DNSName": "green-eggs-and-ham-423456.us-east-1.elb.amazonaws.com",
+    "SecurityGroups": [
+      "sg-12345678"
+    ],
+    "LoadBalancerName": "green-eggs-and-ham",
+    "CreatedTime": "2016-09-17T20:36:56.240Z",
+    "Scheme": "internet-facing",
+    "Type": "application",
+    "CanonicalHostedZoneId": "12345678901",
+    "AvailabilityZones": [{
+      "SubnetId": "subnet-12345678",
+      "ZoneName": "us-east-1e"
+    }, {
+      "SubnetId": "subnet-12345678",
+      "ZoneName": "us-east-1a"
+    }, {
+      "SubnetId": "subnet-12345678",
+      "ZoneName": "us-east-1d"
+    }]
+  }]
+}

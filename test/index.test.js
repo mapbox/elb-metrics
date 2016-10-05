@@ -6,9 +6,15 @@ var prepareQueries = metrics.prepareQueries;
 var outputMetrics = metrics.outputMetrics;
 var elbMetrics = metrics.elbMetrics;
 var prepareResults = metrics.prepareResults;
+var preFlightCheck = metrics.preFlightCheck;
 var metricdatapoint = require('./fixture/datapoints.json');
-var parameters = require('./fixture/prepareQueries_fixtures.json');
+var elbQueries = require('./fixture/prepareQueries_ELB.json');
+var albQueries = require('./fixture/prepareQueries_ALB.json');
+var describeALB = require('./fixture/describeALB.json');
+var describeELB = require('./fixture/describeELB.json');
 var originalCloudWatch = AWS.CloudWatch;
+var originalELB = AWS.ELB;
+var originalELB2 = AWS.ELBv2;
 
 tape('validate if it is an AWS region', function (assert) {
     elbMetrics(1471610000000, 1471614276790, 'xyz', 'abc', function (err, data) {
@@ -39,6 +45,56 @@ tape('validate if start and end time are no more than 60 minutes apart', functio
     });
 });
 
+tape('mock [ELB]', function (assert) {
+    AWS.ELB = MockELB;
+    function MockELB() {}
+    MockELB.prototype.describeLoadBalancers = function (params, callback) {
+        var err = {message: 'There is no ACTIVE Load Balancer named \'alb\'',
+        code: 'LoadBalancerNotFound',
+        time: 'Tue Oct 04 2016 13:43:19 GMT+0530 (IST)',
+        requestId: '1234-456-7890-1111-111111111111',
+        statusCode: 400,
+        retryable: false,
+        retryDelay: 94.10519227385521};
+        if (params.LoadBalancerNames[0] === 'elb') callback(null, describeELB);
+        if (params.LoadBalancerNames[0] === 'alb') callback(err);
+    };
+    assert.end();
+});
+
+tape('mock [ELB2]', function (assert) {
+    AWS.ELBv2 = MockELBv2;
+    function MockELBv2() {}
+    MockELBv2.prototype.describeLoadBalancers = function (params, callback) {
+        var err = {message: 'There is no ACTIVE Load Balancer named \'elb\'',
+        code: 'LoadBalancerNotFound',
+        time: 'Tue Oct 04 2016 13:43:19 GMT+0530 (IST)',
+        requestId: '1234-456-7890-1111-111111111111',
+        statusCode: 400,
+        retryable: false,
+        retryDelay: 94.10519227385521};
+        if (params.Names[0] === 'elb') callback(err);
+        if (params.Names[0] === 'alb') callback(null, describeALB);
+    };
+    assert.end();
+});
+
+tape('preflight check elb', function (assert) {
+    preFlightCheck('elb', function (err, data) {
+        assert.ifError(err);
+        assert.deepEquals(data, 'green-eggs-and-ham-VPC', 'ok ELB returns ELB name');
+        assert.end();
+    });
+});
+
+tape('preflight check alb', function (assert) {
+    preFlightCheck('alb', function (err, data) {
+        assert.ifError(err);
+        assert.deepEquals(data, 'app/green-eggs-and-ham/1234567890123456', 'ok returns ALB name');
+        assert.end();
+    });
+});
+
 tape('prepare queries', function (assert) {
     var obj = {
         startTime: 1471610000000,
@@ -46,8 +102,10 @@ tape('prepare queries', function (assert) {
         region: 'us-east-1',
         elbname: 'abc'
     };
-    var datapoints = prepareQueries(obj);
-    assert.deepEquals(datapoints, parameters, 'ok desired metrics parameters equal');
+    var elbMetricQueries = prepareQueries(obj, 1);
+    assert.deepEquals(elbMetricQueries, elbQueries, 'ok ELB desired metrics equal');
+    var albMetricQueries = prepareQueries(obj, 0);
+    assert.deepEquals(albMetricQueries, albQueries, 'ok ALB desired metrics equal');
     assert.end();
 });
 
@@ -71,7 +129,7 @@ tape('ELB metrics', function (assert) {
         region: 'us-east-1',
         elbname: 'abc'
     };
-    var datapoints = prepareQueries(obj);
+    var datapoints = prepareQueries(obj, 1);
     var expectedPecentages = {period: '12s',
     requestPerSecond: '4/s',
     percent2xx: '50 %',
@@ -92,5 +150,11 @@ tape('ELB metrics', function (assert) {
 
 tape('[CloudWatch] restore', function (assert) {
     AWS.CloudWatch = originalCloudWatch;
+    assert.end();
+});
+
+tape('[ELB]s restore', function (assert) {
+    AWS.ELB = originalELB;
+    AWS.ELBv2 = originalELB2;
     assert.end();
 });

@@ -1,0 +1,63 @@
+{"LoadBalancerDescriptions": [
+        {
+            "Subnets": [
+                "subnet-a1234",
+                "subnet-b1234",
+                "subnet-c1234"
+            ],
+            "CanonicalHostedZoneNameID": "abcd",
+            "CanonicalHostedZoneName": "green-eggs-and-ham-VPC-11234.us-east-1.elb.amazonaws.com",
+            "ListenerDescriptions": [
+                {
+                    "Listener": {
+                        "InstancePort": 1234,
+                        "SSLCertificateId": "batman",
+                        "LoadBalancerPort": 123,
+                        "Protocol": "HTTPS",
+                        "InstanceProtocol": "HTTP"
+                    },
+                    "PolicyNames": [
+                        "Batman-security"
+                    ]
+                }
+            ],
+            "HealthCheck": {
+                "HealthyThreshold": 3,
+                "Interval": 10,
+                "Target": "HTTP:1234/",
+                "Timeout": 9,
+                "UnhealthyThreshold": 3
+            },
+            "VPCId": "vpc-g1o2t3am",
+            "BackendServerDescriptions": [],
+            "Instances": [
+                {
+                    "InstanceId": "i-1234"
+                }
+            ],
+            "DNSName": "green-eggs-and-ham-VPC-11234.us-east-1.elb.amazonaws.com",
+            "SecurityGroups": [
+                "sg-123450"
+            ],
+            "Policies": {
+                "LBCookieStickinessPolicies": [],
+                "AppCookieStickinessPolicies": [],
+                "OtherPolicies": [
+                    "ELBSecurityPolicy-2014-01"
+                ]
+            },
+            "LoadBalancerName": "green-eggs-and-ham-VPC",
+            "CreatedTime": "2016-09-16T21:12:42.630Z",
+            "AvailabilityZones": [
+                "us-east-1a",
+                "us-east-1d",
+                "us-east-1e"
+            ],
+            "Scheme": "internet-facing",
+            "SourceSecurityGroup": {
+                "OwnerAlias": "1234567",
+                "GroupName": "green-eggs-and-ham-ELBSecurityGroup-1234567890123"
+            }
+        }
+    ]
+}

@@ -6,6 +6,7 @@ module.exports.prepareQueries = prepareQueries;
 module.exports.outputMetrics = outputMetrics;
 module.exports.elbMetrics = elbMetrics;
 module.exports.prepareResults = prepareResults;
+module.exports.preFlightCheck = preFlightCheck;
 var queue = require('d3-queue').queue;
 var AWS = module.exports.AWS = require('aws-sdk');
 
@@ -36,54 +37,125 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
         return callback(new Error('start and end time should not be more than 60 minutes apart'));
     }
 
-    var parameters = {
-        startTime: startTime,
-        endTime: endTime,
-        region: region,
-        elbname: elbname
-    };
-
-    var queries = prepareQueries(parameters);
-    outputMetrics(queries, region, function (err, data) {
+    preFlightCheck(elbname, function (err, name) {
+        var elb = 0;
         if (err) return callback(err);
-        var requestPercentages = prepareResults(startTime, endTime, data);
-        callback(null, requestPercentages);
+        if (name.indexOf('app/') === -1) { elb = 1; }
+        var parameters = {
+            startTime: startTime,
+            endTime: endTime,
+            region: region,
+            elbname: name
+        };
+        var queries = prepareQueries(parameters, elb);
+        outputMetrics(queries, region, function (err, data) {
+            if (err) return callback(err);
+            var requestPercentages = prepareResults(startTime, endTime, data);
+            return callback(null, requestPercentages);
+        });
     });
 }
+
+function preFlightCheck(elbname, callback) {
+    var q = queue(2);
+    q.defer(getELBName, elbname);
+    q.defer(getALBName, elbname);
+    q.awaitAll(function (err, data) {
+        if (err) return callback(err);
+        data = data.filter(d => { return d; });
+        return callback(null, data[0]);
+
+    });
+}
+
+function getALBName(elbname, callback) {
+    var elbv2 = new AWS.ELBv2();
+    var parameter = {Names: [elbname]};
+    elbv2.describeLoadBalancers(parameter, function (err, data) {
+        if (err) {
+            if (err.code === 'LoadBalancerNotFound') return callback();
+        } else {
+            var arn = data.LoadBalancers[0].LoadBalancerArn;
+            var albName = arn.match(/app.*/);
+            return callback(null, albName[0]);
+        }
+    });
+}
+
+function getELBName(elbname, callback) {
+    var elb = new AWS.ELB();
+    var parameter = {LoadBalancerNames: [elbname]};
+    elb.describeLoadBalancers(parameter, function (err, data) {
+        if (err) {
+            if (err.code === 'LoadBalancerNotFound') return callback();
+        }
+        return callback(null, data.LoadBalancerDescriptions[0].LoadBalancerName);
+    });
+}
+
 /**
  * Creates parameters for each cloudwatch query given the input from the user.
  * @param {Object} commmand line input formatted into an object
  * @returns {Array} array of desired metric parameters
  */
 
-function prepareQueries(obj) {
-    var desiredMetrics = {
-        'HTTPCode_Backend_2XX': 'Sum',
-        'HTTPCode_Backend_3XX': 'Sum',
-        'HTTPCode_Backend_4XX': 'Sum',
-        'HTTPCode_Backend_5XX': 'Sum',
-        'RequestCount': 'Sum',
-        'Latency': 'Average'
-    };
-
+function prepareQueries(obj, elb) {
     var desiredMetricsParameters = [];
-    for (var i in desiredMetrics) {
-
-        var params = {
-            EndTime: new Date(obj.endTime).toISOString(),
-            MetricName: i,
-            Namespace: 'AWS/ELB',
-            Period: 60,
-            StartTime: new Date(obj.startTime).toISOString(),
-            Statistics: [desiredMetrics[i].toString()],
-            Dimensions: [
-                {
-                    Name: 'LoadBalancerName',
-                    Value: obj.elbname
-                }
-            ]
+    if (elb) {
+        var desiredELBMetrics = {
+            'HTTPCode_Backend_2XX': 'Sum',
+            'HTTPCode_Backend_3XX': 'Sum',
+            'HTTPCode_Backend_4XX': 'Sum',
+            'HTTPCode_Backend_5XX': 'Sum',
+            'RequestCount': 'Sum',
+            'Latency': 'Average'
         };
-        desiredMetricsParameters.push({parameter: params, region: obj.region});
+
+        for (var i in desiredELBMetrics) {
+
+            var params = {
+                EndTime: new Date(obj.endTime).toISOString(),
+                MetricName: i,
+                Namespace: 'AWS/ELB',
+                Period: 60,
+                StartTime: new Date(obj.startTime).toISOString(),
+                Statistics: [desiredELBMetrics[i].toString()],
+                Dimensions: [
+                    {
+                        Name: 'LoadBalancerName',
+                        Value: obj.elbname
+                    }
+                ]
+            };
+            desiredMetricsParameters.push({parameter: params, region: obj.region});
+        }
+    } else {
+        var desiredALBMetrics = {
+            'HTTPCode_Target_2XX_Count': 'Sum',
+            'HTTPCode_Target_3XX_Count': 'Sum',
+            'HTTPCode_Target_4XX_Count': 'Sum',
+            'HTTPCode_Target_5XX_Count': 'Sum',
+            'RequestCount': 'Sum',
+            'TargetResponseTime': 'Average'
+        };
+
+        for (var j in desiredALBMetrics) {
+            var parameters = {
+                EndTime: new Date(obj.endTime).toISOString(),
+                MetricName: j,
+                Namespace: 'AWS/ApplicationELB',
+                Period: 60,
+                StartTime: new Date(obj.startTime).toISOString(),
+                Statistics: [desiredALBMetrics[j].toString()],
+                Dimensions: [
+                    {
+                        Name: 'LoadBalancer',
+                        Value: obj.elbname
+                    }
+                ]
+            };
+            desiredMetricsParameters.push({parameter: parameters, region: obj.region});
+        }
     }
     return desiredMetricsParameters;
 }
@@ -108,19 +180,19 @@ function outputMetrics(desiredMetricsDimensions, region, callback) {
         data.forEach(function (i) {
             allMetrics.push({Label: i.Label, Datapoints: i.Datapoints});
         });
-        callback(null, allMetrics);
+        return callback(null, allMetrics);
     });
 }
 
-/**
- * Makes requests to the cloudwatch api and gets Sum/Average for
+
+/** Makes requests to the cloudwatch api and gets Sum/Average for
  * HTTPCode_Backend_2XX, HTTPCode_Backend_3XX, HTTPCode_Backend_4XX, HTTPCode_Backend_5XX, RequestCount, Latency
  *
  * @param {Object} parameter Object for getMetricStatistics
  * @param {String} region where the ELB is present
  * @param {callback}
  * @returns {Object} Datapoints and Labels for the given MetricName in the form of an Object
- */
+*/
 
 function getMetrics(params, region, callback) {
     AWS.config.update({region: region});
