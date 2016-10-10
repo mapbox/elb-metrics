@@ -36,7 +36,6 @@ function elbMetrics(startTime, endTime, region, elbname, callback) {
     if (diffInMinutes > 60) {
         return callback(new Error('start and end time should not be more than 60 minutes apart'));
     }
-
     preFlightCheck(elbname, function (err, name) {
         var elb = 0;
         if (err) return callback(err);
@@ -101,6 +100,9 @@ function getELBName(elbname, callback) {
 
 function prepareQueries(obj, elb) {
     var desiredMetricsParameters = [];
+    var coeff = 1000 * 60 * 1;
+    var roundedEndTime = new Date(Math.round(obj.endTime / coeff) * coeff).getTime();
+    var roundedStartTime = new Date(Math.floor(obj.startTime / coeff) * coeff).getTime();
     if (elb) {
         var desiredELBMetrics = {
             'HTTPCode_Backend_2XX': 'Sum',
@@ -114,11 +116,11 @@ function prepareQueries(obj, elb) {
         for (var i in desiredELBMetrics) {
 
             var params = {
-                EndTime: new Date(obj.endTime).toISOString(),
+                EndTime: new Date(roundedEndTime).toISOString(),
                 MetricName: i,
                 Namespace: 'AWS/ELB',
                 Period: 60,
-                StartTime: new Date(obj.startTime).toISOString(),
+                StartTime: new Date(roundedStartTime).toISOString(),
                 Statistics: [desiredELBMetrics[i].toString()],
                 Dimensions: [
                     {
@@ -141,11 +143,11 @@ function prepareQueries(obj, elb) {
 
         for (var j in desiredALBMetrics) {
             var parameters = {
-                EndTime: new Date(obj.endTime).toISOString(),
+                EndTime: new Date(roundedEndTime).toISOString(),
                 MetricName: j,
                 Namespace: 'AWS/ApplicationELB',
                 Period: 60,
-                StartTime: new Date(obj.startTime).toISOString(),
+                StartTime: new Date(roundedStartTime).toISOString(),
                 Statistics: [desiredALBMetrics[j].toString()],
                 Dimensions: [
                     {
@@ -211,7 +213,6 @@ function prepareResults(startTime, endTime, data) {
         total[i] = totalRequests(data[i]);
     }
     /* calculate percentage of 2xx, 3xx, 4xx, 5xx */
-
     var requestPerSecond = Math.round((total[4] / period) * 100) / 100;
     var percent2xx = Math.round(((total[0] / total[4]) * 100) * 100) / 100;
     var percent3xx = Math.round(((total[1] / total[4]) * 100) * 100) / 100;
@@ -231,7 +232,7 @@ function prepareResults(startTime, endTime, data) {
         'percent3xx': percent3xx + ' %',
         'percent4xx': percent4xx + ' %',
         'percent5xx': percent5xx + ' %',
-        'avgLatency': avgLatency
+        'avgLatency': avgLatency + ' s'
     };
 }
 

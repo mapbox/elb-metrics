@@ -136,7 +136,7 @@ tape('ELB metrics', function (assert) {
     percent3xx: '25 %',
     percent4xx: '22.92 %',
     percent5xx: '2.08 %',
-    avgLatency: 0.3};
+    avgLatency: '0.3 s'};
 
     outputMetrics(datapoints, datapoints[0].region, function (err, data) {
         assert.ifError(err);
@@ -147,6 +147,18 @@ tape('ELB metrics', function (assert) {
     });
 });
 
+tape('Rounding period for getMetricStatistics', function (assert) {
+    var obj = {
+        startTime: 1476087578216,
+        endTime: 1476087582537,
+        region: 'us-east-1',
+        elbname: 'abc'
+    };
+    var roundingTest = prepareQueries(obj, 1);
+    assert.deepEquals(roundingTest[0].parameter.StartTime, '2016-10-10T08:19:00.000Z', '2016-10-10T08:19:38.216Z rounded to 2016-10-10T08:19:00.000Z');
+    assert.deepEquals(roundingTest[0].parameter.EndTime, '2016-10-10T08:20:00.000Z', '2016-10-10T08:19:42.537Z rounded to 2016-10-10T08:20:00.000Z');
+    assert.end();
+});
 
 tape('[CloudWatch] restore', function (assert) {
     AWS.CloudWatch = originalCloudWatch;
