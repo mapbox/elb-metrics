@@ -101,7 +101,7 @@ function getELBName(elbname, callback) {
 function prepareQueries(obj, elb) {
     var desiredMetricsParameters = [];
     var coeff = 1000 * 60 * 1;
-    var roundedEndTime = new Date(Math.round(obj.endTime / coeff) * coeff).getTime();
+    var roundedEndTime = new Date(Math.ceil(obj.endTime / coeff) * coeff).getTime();
     var roundedStartTime = new Date(Math.floor(obj.startTime / coeff) * coeff).getTime();
     if (elb) {
         var desiredELBMetrics = {
