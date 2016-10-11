@@ -1,6 +1,6 @@
 {
   "name": "elb-metrics",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "node module to gather ELB metrics",
   "main": "index.js",
   "directories": {
