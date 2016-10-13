@@ -73,6 +73,7 @@ function getALBName(elbname, callback) {
     elbv2.describeLoadBalancers(parameter, function (err, data) {
         if (err) {
             if (err.code === 'LoadBalancerNotFound') return callback();
+            else return callback(err);
         } else {
             var arn = data.LoadBalancers[0].LoadBalancerArn;
             var albName = arn.match(/app.*/);
@@ -87,6 +88,7 @@ function getELBName(elbname, callback) {
     elb.describeLoadBalancers(parameter, function (err, data) {
         if (err) {
             if (err.code === 'LoadBalancerNotFound') return callback();
+            else return callback(err);
         }
         return callback(null, data.LoadBalancerDescriptions[0].LoadBalancerName);
     });
