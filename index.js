@@ -17,6 +17,7 @@ var AWS = module.exports.AWS = require('aws-sdk');
  */
 
 function elbMetrics(startTime, endTime, region, elbname, callback) {
+    AWS.config.update({region: region});
     var diffInMinutes;
     var awsRegions = ['us-east-1', 'us-west-2', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1'];
 
@@ -199,9 +200,7 @@ function outputMetrics(desiredMetricsDimensions, region, callback) {
 */
 
 function getMetrics(params, region, callback) {
-    AWS.config.update({region: region});
     var cloudwatch = new AWS.CloudWatch();
-
     cloudwatch.getMetricStatistics(params, callback);
 }
 
