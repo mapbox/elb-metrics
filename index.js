@@ -224,7 +224,7 @@ function prepareResults(startTime, endTime, data) {
     data[5].Datapoints.forEach(function (i) {
         sumLatency += i.Average;
     });
-    var avgLatency = Math.round((sumLatency / data[5].Datapoints.length) * 100) / 100;
+    var avgLatency = Math.round((sumLatency / data[5].Datapoints.length) * 10000) / 10000;
 
     return {
         'period': period + 's',
