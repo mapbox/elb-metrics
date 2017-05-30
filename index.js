@@ -19,7 +19,7 @@ var AWS = module.exports.AWS = require('aws-sdk');
 function elbMetrics(startTime, endTime, region, elbname, callback) {
     AWS.config.update({region: region});
     var diffInMinutes;
-    var awsRegions = ['us-east-1', 'us-west-2', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1'];
+    var awsRegions = ['us-east-1', 'us-west-2', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1', 'us-east-2'];
 
     if (!(awsRegions.indexOf(region) >= 0)) {
         return callback(new Error('provided region name not an AWS region'));
