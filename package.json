@@ -9,6 +9,9 @@
   "scripts": {
     "test": "tape test/*.test.js"
   },
+  "engines": {
+    "node": ">=8.10.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mapbox/elb-metrics.git"
@@ -23,10 +26,10 @@
   },
   "homepage": "https://github.com/mapbox/elb-metrics#readme",
   "dependencies": {
-    "aws-sdk": "^2.6.6",
-    "aws-sdk-mock": "^1.4.1",
-    "d3-queue": "^3.0.2",
+    "aws-sdk": "^2.283.1",
+    "aws-sdk-mock": "^4.0.0",
+    "d3-queue": "^3.0.7",
     "minimist": "^1.2.0",
-    "tape": "^4.6.0"
+    "tape": "^4.9.1"
   }
 }
