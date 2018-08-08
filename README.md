@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mapbox/elb-metrics.svg?branch=master)](https://travis-ci.org/mapbox/elb-metrics)
+[![Build Status](https://travis-ci.com/mapbox/elb-metrics.svg?branch=master)](https://travis-ci.com/mapbox/elb-metrics)
 
 # elb-metrics
 Node module which collects metrics from the [ElasticLoadBalacer](docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/Welcome.html) and makes assertions about the performance of the stack, by calculating the number of requests that were 2xxs, 3xxs, 4xxs, 5xxs and the time taken to get back a response (latency). 
